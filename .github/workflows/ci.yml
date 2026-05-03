@@ -1,0 +1,26 @@
+name: CI - Build Microservices
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build-services:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build API Gateway
+        run: docker build -t api-gateway ./api-gateway
+
+      - name: Build Order Service
+        run: docker build -t order-service ./order-service
+
+      - name: Build Payment Service
+        run: docker build -t payment-service ./payment-service
