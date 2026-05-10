@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: payment-service-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: payment-service.rules
+      rules:
+        - alert: HighPaymentFailures
+          expr: rate(payment_service_requests_total{status="500"}[1m]) > 0.1
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High payment failure rate"
+            description: "Payment service is returning too many 500 errors"
