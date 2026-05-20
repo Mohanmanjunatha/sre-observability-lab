@@ -1,0 +1,31 @@
+name: Deploy Microservices
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Minikube Docker Env
+        run: |
+          eval $(minikube docker-env)
+
+      - name: Build API Gateway
+        run: docker build -t sre-observability-lab-api-gateway:latest ./api-gateway
+
+      - name: Build Order Service
+        run: docker build -t sre-observability-lab-order-service:latest ./order-service
+
+      - name: Build Payment Service
+        run: docker build -t sre-observability-lab-payment-service:latest ./payment-service
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/
