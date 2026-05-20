@@ -13,19 +13,33 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set Minikube Docker Env
+      - name: Build API Gateway
         run: |
           eval $(minikube docker-env)
-
-      - name: Build API Gateway
-        run: docker build -t sre-observability-lab-api-gateway:latest ./api-gateway
+          docker build -t sre-observability-lab-api-gateway:latest ./api-gateway
 
       - name: Build Order Service
-        run: docker build -t sre-observability-lab-order-service:latest ./order-service
+        run: |
+          eval $(minikube docker-env)
+          docker build -t sre-observability-lab-order-service:latest ./order-service
 
       - name: Build Payment Service
-        run: docker build -t sre-observability-lab-payment-service:latest ./payment-service
+        run: |
+          eval $(minikube docker-env)
+          docker build -t sre-observability-lab-payment-service:latest ./payment-service
 
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/
+
+      - name: Restart Kubernetes Deployments
+        run: |
+          kubectl rollout restart deployment api-gateway
+          kubectl rollout restart deployment order-service
+          kubectl rollout restart deployment payment-service
+
+      - name: Verify Rollout Status
+        run: |
+          kubectl rollout status deployment/api-gateway
+          kubectl rollout status deployment/order-service
+          kubectl rollout status deployment/payment-service
