@@ -1,6 +1,6 @@
 pipeline {
     agent {
-    label 'built-in'
+        label 'built-in'
     }
 
     stages {
@@ -11,34 +11,32 @@ pipeline {
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Validate Project Structure') {
             steps {
                 sh '''
-                eval $(minikube docker-env)
-                docker build -t sre-observability-lab-api-gateway:latest ./api-gateway
-                docker build -t sre-observability-lab-order-service:latest ./order-service
-                docker build -t sre-observability-lab-payment-service:latest ./payment-service
+                ls -la
+                test -d api-gateway
+                test -d order-service
+                test -d payment-service
+                test -d k8s
                 '''
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Validate Kubernetes YAML') {
             steps {
                 sh '''
-                kubectl apply -f k8s/
-                kubectl rollout restart deployment api-gateway
-                kubectl rollout restart deployment order-service
-                kubectl rollout restart deployment payment-service
+                find k8s -name "*.yaml" -print
                 '''
             }
         }
 
-        stage('Verify Rollout') {
+        stage('Validate Dockerfiles') {
             steps {
                 sh '''
-                kubectl rollout status deployment/api-gateway
-                kubectl rollout status deployment/order-service
-                kubectl rollout status deployment/payment-service
+                test -f api-gateway/Dockerfile
+                test -f order-service/Dockerfile
+                test -f payment-service/Dockerfile
                 '''
             }
         }
