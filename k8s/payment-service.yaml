@@ -12,6 +12,8 @@ spec:
       labels:
         app: payment-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: payment-service
           image: ghcr.io/mohanmanjunatha/sre-observability-lab/payment-service:latest
