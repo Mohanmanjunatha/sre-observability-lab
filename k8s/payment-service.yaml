@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: payment-service
-          image: sre-observability-lab-payment-service:latest
-          imagePullPolicy: Never
+          image: ghcr.io/mohanmanjunatha/sre-observability-lab/payment-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
 

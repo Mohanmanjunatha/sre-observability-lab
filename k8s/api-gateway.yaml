@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: sre-observability-lab-api-gateway:latest
-          imagePullPolicy: Never
+          image: ghcr.io/mohanmanjunatha/sre-observability-lab/api-gateway:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
 
