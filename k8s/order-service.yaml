@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: sre-observability-lab-order-service:latest
-          imagePullPolicy: Never
+          image: ghcr.io/mohanmanjunatha/sre-observability-lab/order-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
 
