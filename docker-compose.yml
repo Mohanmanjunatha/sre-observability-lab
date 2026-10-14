@@ -17,3 +17,56 @@ services:
     build: ./payment-service
     ports:
       - "5003:5000"
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - api-gateway
+      - order-service
+      - payment-service
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  splunk:
+    image: splunk/splunk:latest
+    platform: linux/amd64
+    hostname: splunk
+    environment:
+      SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
+      SPLUNK_START_ARGS: "--accept-license"
+      SPLUNK_PASSWORD: "ChangeMe123!"
+      SPLUNK_HEC_TOKEN: "11111111-1111-4111-8111-111111111111"
+    ports:
+      - "8000:8000"
+      - "8088:8088"
+    volumes:
+      - splunk-data:/opt/splunk/var
+      - splunk-etc:/opt/splunk/etc
+
+  jenkins:
+    image: jenkins/jenkins:lts-jdk21
+    container_name: sre-jenkins
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+    restart: unless-stopped
+
+volumes:
+  grafana-data:
+  splunk-data:
+  splunk-etc:
+  jenkins-data:

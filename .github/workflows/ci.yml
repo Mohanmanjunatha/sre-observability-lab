@@ -1,26 +1,33 @@
-name: CI - Build Microservices
+name: SRE Microservices CI
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  build-services:
+  validate-and-build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Build API Gateway
-        run: docker build -t api-gateway ./api-gateway
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-      - name: Build Order Service
-        run: docker build -t order-service ./order-service
+      - name: Validate Python Syntax
+        run: |
+          python -m compileall -q api-gateway order-service payment-service
 
-      - name: Build Payment Service
-        run: docker build -t payment-service ./payment-service
+      - name: Validate Docker Compose
+        run: docker compose config --quiet
+
+      - name: Build Docker Images
+        run: |
+          docker build -t api-gateway ./api-gateway
+          docker build -t order-service ./order-service
+          docker build -t payment-service ./payment-service

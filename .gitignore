@@ -6,3 +6,7 @@ __pycache__/
 .idea/
 actions-runner/
 actions-runner/
+
+project-code.txt
+sre-project.zip
+.env
