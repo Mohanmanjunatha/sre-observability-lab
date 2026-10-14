@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "sre-microservices"
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "api-gateway:5000"
+          - "order-service:5000"
+          - "payment-service:5000"

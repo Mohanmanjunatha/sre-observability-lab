@@ -1,32 +1,38 @@
 pipeline {
-    agent {
-        label 'built-in'
+    agent { label 'built-in' }
+
+    options {
+        skipDefaultCheckout(true)
+        timestamps()
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out source code'
                 checkout scm
+                echo 'GitHub checkout completed'
             }
         }
 
         stage('Validate Project Structure') {
             steps {
                 sh '''
-                ls -la
-                test -d api-gateway
-                test -d order-service
-                test -d payment-service
-                test -d k8s
+                    test -d api-gateway
+                    test -d order-service
+                    test -d payment-service
+                    test -d k8s
+                    echo "Project structure validated"
                 '''
             }
         }
 
-        stage('Validate Kubernetes YAML') {
+        stage('Python Syntax Check') {
             steps {
                 sh '''
-                find k8s -name "*.yaml" -print
+                    for file in api-gateway/app.py order-service/app.py payment-service/app.py; do
+                        echo "Checking $file"
+                        python3 -m py_compile "$file"
+                    done
                 '''
             }
         }
@@ -34,11 +40,33 @@ pipeline {
         stage('Validate Dockerfiles') {
             steps {
                 sh '''
-                test -f api-gateway/Dockerfile
-                test -f order-service/Dockerfile
-                test -f payment-service/Dockerfile
+                    test -f api-gateway/Dockerfile
+                    test -f order-service/Dockerfile
+                    test -f payment-service/Dockerfile
+                    echo "All Dockerfiles found"
                 '''
             }
+        }
+
+        stage('Failure Simulation') {
+            steps {
+                sh '''
+                    if [ -f fail-build.txt ]; then
+                        echo "ERROR: Intentional failure detected"
+                        exit 1
+                    fi
+                    echo "Failure simulation passed"
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'PIPELINE SUCCESSFUL'
+        }
+        failure {
+            echo 'PIPELINE FAILED - Check Console Output'
         }
     }
 }
