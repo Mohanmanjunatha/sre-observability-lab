@@ -1,3 +1,4 @@
+
 name: SRE Microservices CI
 
 on:
@@ -24,6 +25,9 @@ jobs:
           python -m compileall -q api-gateway order-service payment-service
 
       - name: Validate Docker Compose
+        env:
+          SPLUNK_PASSWORD: "ci-validation-placeholder"
+          SPLUNK_HEC_TOKEN: "00000000-0000-4000-8000-000000000000"
         run: docker compose config --quiet
 
       - name: Build Docker Images
