@@ -72,6 +72,9 @@ services:
       - "50000:50000"
     volumes:
       - jenkins-data:/var/jenkins_home
+      - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock
+    group_add:
+      - "0"
     restart: unless-stopped
 
 volumes:

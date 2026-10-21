@@ -1,3 +1,4 @@
+
 FROM jenkins/jenkins:lts-jdk21
 
 USER root
@@ -11,5 +12,8 @@ RUN apt-get update && \
         curl \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
+
+# Copy the Docker CLI from the official Docker image
+COPY --from=docker:29.4.1-cli /usr/local/bin/docker /usr/local/bin/docker
 
 USER jenkins
