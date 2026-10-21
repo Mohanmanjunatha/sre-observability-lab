@@ -1,7 +1,7 @@
 
 services:
   api-gateway:
-    build: ./api-gateway
+    image: sre-api-gateway:latest
     ports:
       - "5001:5000"
     depends_on:
@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
 
   order-service:
-    build: ./order-service
+    image: sre-order-service:latest
     ports:
       - "5002:5000"
     depends_on:
@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
 
   payment-service:
-    build: ./payment-service
+    image: sre-payment-service:latest
     ports:
       - "5003:5000"
     restart: unless-stopped
