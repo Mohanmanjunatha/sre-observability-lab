@@ -19,6 +19,8 @@ pipeline {
         stage('Validate Project Structure') {
             steps {
                 sh '''
+                    set -e
+
                     test -d api-gateway
                     test -d order-service
                     test -d payment-service
@@ -33,6 +35,8 @@ pipeline {
         stage('Python Syntax Check') {
             steps {
                 sh '''
+                    set -e
+
                     for file in \
                         api-gateway/app.py \
                         order-service/app.py \
@@ -79,11 +83,32 @@ pipeline {
         stage('Validate Dockerfiles') {
             steps {
                 sh '''
+                    set -e
+
                     test -f api-gateway/Dockerfile
                     test -f order-service/Dockerfile
                     test -f payment-service/Dockerfile
 
                     echo "All Dockerfiles found"
+                '''
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                sh '''
+                    set -e
+
+                    echo "Building API Gateway image..."
+                    docker build -t sre-api-gateway:latest ./api-gateway
+
+                    echo "Building Order Service image..."
+                    docker build -t sre-order-service:latest ./order-service
+
+                    echo "Building Payment Service image..."
+                    docker build -t sre-payment-service:latest ./payment-service
+
+                    echo "All Docker images built successfully"
                 '''
             }
         }
