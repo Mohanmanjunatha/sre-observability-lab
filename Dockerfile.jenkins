@@ -10,10 +10,20 @@ RUN apt-get update && \
         python3-venv \
         git \
         curl \
-        ca-certificates && \
+        ca-certificates \
+        gnupg && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy the Docker CLI from the official Docker image
+# Install Terraform from HashiCorp's official repository
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | \
+    gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(. /etc/os-release && echo "$VERSION_CODENAME") main" \
+    > /etc/apt/sources.list.d/hashicorp.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends terraform && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy Docker CLI from official Docker image
 COPY --from=docker:29.4.1-cli /usr/local/bin/docker /usr/local/bin/docker
 
 USER jenkins
