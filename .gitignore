@@ -10,3 +10,15 @@ actions-runner/
 project-code.txt
 sre-project.zip
 .env
+
+# Terraform local files
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/.terraform.tfstate.lock.info
+**/crash.log
+
+# Sensitive Terraform variable files
+**/*.tfvars
+**/*.tfvars.json
